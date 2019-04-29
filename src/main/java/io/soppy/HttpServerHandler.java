@@ -20,10 +20,10 @@ public class HttpServerHandler extends SimpleChannelInboundHandler<FullHttpReque
         var handler = RouterManager.getInstance().getHandler(msg.uri());
         if (handler == null) {
             sendError(ctx, HttpResponseStatus.NOT_FOUND);
+            return;
         }
         var obj = handler.handle(msg);
         sendMessage(ctx, JSONObject.toJSONString(obj));
-        
     }
 
     private void sendError(ChannelHandlerContext ctx, HttpResponseStatus status) {

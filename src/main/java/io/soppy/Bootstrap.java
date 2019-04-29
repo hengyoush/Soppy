@@ -8,6 +8,7 @@ import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
+import io.netty.handler.codec.http.HttpObjectAggregator;
 import io.netty.handler.codec.http.HttpRequestDecoder;
 import io.netty.handler.codec.http.HttpResponseEncoder;
 
@@ -23,7 +24,8 @@ public class Bootstrap {
                     public void initChannel(Channel ch) throws Exception {
                         ch.pipeline().addLast(new HttpResponseEncoder());
                         ch.pipeline().addLast(new HttpRequestDecoder());
-
+                        ch.pipeline().addLast(new HttpObjectAggregator(1024 * 1024));
+                        ch.pipeline().addLast(new HttpServerHandler());
                     }
                 }).option(ChannelOption.SO_BACKLOG, 128)
                 .childOption(ChannelOption.SO_KEEPALIVE, true);
@@ -37,5 +39,15 @@ public class Bootstrap {
             workerGroup.shutdownGracefully();
             bossGroup.shutdownGracefully();
         }
+    }
+
+    public static void main(String[] args) {
+        int port;
+        if (args != null && args.length == 1) {
+            port = Integer.valueOf(args[0]);
+        } else {
+            port = 20789;
+        }
+        new Bootstrap().start(port);
     }
 }
