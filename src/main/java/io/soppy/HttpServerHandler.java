@@ -17,7 +17,7 @@ public class HttpServerHandler extends SimpleChannelInboundHandler<FullHttpReque
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, FullHttpRequest msg) throws Exception {
-        var handler = RouterManager.getInstance().getHandler(msg.uri());
+        var handler = RouterManager.getInstance().getHandler(msg.uri(), msg.method());
         if (handler == null) {
             sendError(ctx, HttpResponseStatus.NOT_FOUND);
             return;
