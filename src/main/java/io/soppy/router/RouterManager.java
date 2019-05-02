@@ -38,7 +38,7 @@ public class RouterManager {
         }
     }
 
-    public RequestHandler getHandler(String uri, HttpMethod method) {
+    public RequestHandlerDescriptor getHandler(String uri, HttpMethod method) {
         Objects.requireNonNull(uri);
         Objects.requireNonNull(method);
 
@@ -49,6 +49,6 @@ public class RouterManager {
         if (!handler.supportMethods().contains(methodLocal)) {
             throw new HandlerNotFoundException(uri);
         }
-        return handler.getHandler();
+        return handler;
     }
  }

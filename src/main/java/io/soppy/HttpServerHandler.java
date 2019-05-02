@@ -6,31 +6,43 @@ import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
-import io.netty.handler.codec.http.DefaultFullHttpResponse;
-import io.netty.handler.codec.http.FullHttpRequest;
-import io.netty.handler.codec.http.HttpResponseStatus;
-import io.netty.handler.codec.http.HttpVersion;
+import io.netty.handler.codec.http.*;
+import io.netty.util.AsciiString;
 import io.netty.util.CharsetUtil;
+import io.soppy.handler.JsonRequestHandler;
 import io.soppy.router.RouterManager;
+import io.soppy.serialize.JSONSerializer;
+import io.soppy.serialize.Serializer;
+
+import java.net.http.HttpHeaders;
 
 public class HttpServerHandler extends SimpleChannelInboundHandler<FullHttpRequest> {
+    private static final String FAVICON_ICO = "/favicon.ico";
+    private static final AsciiString CONTENT_TYPE = AsciiString.cached("Content-Type");
+    private static final AsciiString CONTENT_LENGTH = AsciiString.cached("Content-Length");
+    private static final AsciiString CONNECTION = AsciiString.cached("Connection");
+    private static final AsciiString KEEP_ALIVE = AsciiString.cached("keep-alive");
 
     private RouterManager routerManager;
-
+    private Serializer serializer = new JSONSerializer();
     public HttpServerHandler(RouterManager routerManager) {
         this.routerManager = routerManager;
     }
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, FullHttpRequest msg) throws Exception {
-        var handler = routerManager.getHandler(msg.uri(), msg.method());
-        if (handler == null) {
+        var handlerDesp = routerManager.getHandler(msg.uri(), msg.method());
+        var handler = handlerDesp.getHandler();
+        if (handlerDesp == null) {
             sendError(ctx, HttpResponseStatus.NOT_FOUND);
             return;
         }
-        var obj = handler.handle(msg);
-        sendMessage(ctx, JSONObject.toJSONString(obj));
+
+        var result = handler.handle(msg);
+        sendMessage(ctx, JSONObject.toJSONString(result));
     }
+
+
 
     private void sendError(ChannelHandlerContext ctx, HttpResponseStatus status) {
         var resp = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, status);
