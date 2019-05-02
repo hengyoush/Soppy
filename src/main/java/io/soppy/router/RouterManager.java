@@ -33,7 +33,7 @@ public class RouterManager {
         }
         var descriptor = Util.getDecriptorFromHandler(handler);
         routers.putIfAbsent(uri, descriptor);
-        if (routers.get(uri) != handler) {
+        if (routers.get(uri).getHandler() != handler) {
             throw new IllegalArgumentException("重复注册路由uri: " + uri);
         }
     }

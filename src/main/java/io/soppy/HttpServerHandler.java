@@ -15,9 +15,15 @@ import io.soppy.router.RouterManager;
 
 public class HttpServerHandler extends SimpleChannelInboundHandler<FullHttpRequest> {
 
+    private RouterManager routerManager;
+
+    public HttpServerHandler(RouterManager routerManager) {
+        this.routerManager = routerManager;
+    }
+
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, FullHttpRequest msg) throws Exception {
-        var handler = RouterManager.getInstance().getHandler(msg.uri(), msg.method());
+        var handler = routerManager.getHandler(msg.uri(), msg.method());
         if (handler == null) {
             sendError(ctx, HttpResponseStatus.NOT_FOUND);
             return;

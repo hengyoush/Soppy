@@ -15,7 +15,7 @@ public class Util {
     public static RequestHandlerDescriptor getDecriptorFromHandler(RequestHandler handler) {
         Class<?> clazz = handler.getClass();
         Set<Method.Type> methods = Optional.ofNullable(clazz.getAnnotation(Method.class))
-                .map(Method::method)
+                .map(Method::value)
                 .map(Set::of)
                 .orElse(Set.of(GET, POST));
 

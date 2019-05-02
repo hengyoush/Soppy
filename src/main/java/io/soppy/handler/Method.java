@@ -8,7 +8,7 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.TYPE})
 public @interface Method {
-    Method.Type[] method() default {Type.GET};
+    Method.Type[] value() default {Type.GET};
 
     enum Type {
         GET, POST
