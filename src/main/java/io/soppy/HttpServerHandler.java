@@ -29,15 +29,13 @@ public class HttpServerHandler extends SimpleChannelInboundHandler<FullHttpReque
     }
 
     @Override
-    protected void channelRead0(ChannelHandlerContext ctx, FullHttpRequest msg) throws Exception {
+    protected void channelRead0(ChannelHandlerContext ctx, FullHttpRequest msg) {
         var handlerDesp = routerManager.getHandler(msg.uri(), msg.method());
         var handler = handlerDesp.getHandler();
 
         var result = handler.handle(msg);
         sendMessage(ctx, JSONObject.toJSONString(result));
     }
-
-
 
     private void sendError(ChannelHandlerContext ctx, HttpResponseStatus status) {
         var resp = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, status);

@@ -6,5 +6,5 @@ public interface RequestHandlerDescriptor {
 
     Set<Method.Type> supportMethods();
     RequestHandler getHandler();
-    <T> Class<T> getReqClass();
+    Class<?> getReqClass();
 }

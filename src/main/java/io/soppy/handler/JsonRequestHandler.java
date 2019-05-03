@@ -1,8 +1,7 @@
 package io.soppy.handler;
 
-import com.alibaba.fastjson.JSONObject;
 import io.netty.handler.codec.http.FullHttpRequest;
-import io.netty.util.CharsetUtil;
+import io.soppy.serialize.JSONSerializer;
 
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
@@ -10,12 +9,17 @@ import java.lang.reflect.Type;
 @FunctionalInterface
 public interface JsonRequestHandler<T> extends RequestHandler {
     @Override
+    @SuppressWarnings("unchecked")
     default Object handle(FullHttpRequest fullHttpRequest) {
-        String jsonStr = fullHttpRequest.content().toString(CharsetUtil.UTF_8);
         Type type = ((ParameterizedType) this.getClass().getGenericInterfaces()[0]).getActualTypeArguments()[0];
-        T req = JSONObject.parseObject(
-                jsonStr,
-                type);
+        T req = null;
+        byte[] bytes = new byte[fullHttpRequest.content().readableBytes()];
+        fullHttpRequest.content().getBytes(0, bytes);
+        try {
+            req = JSONSerializer.getInstance().deserialize((Class<T>) Class.forName(type.getTypeName()), bytes);
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
         return handle(req);
     }
 

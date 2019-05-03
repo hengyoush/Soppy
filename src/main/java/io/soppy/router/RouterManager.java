@@ -5,7 +5,6 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
-import io.netty.handler.codec.http.FullHttpRequest;
 import io.netty.handler.codec.http.HttpMethod;
 import io.soppy.HandlerNotFoundException;
 import io.soppy.Util;
@@ -31,7 +30,7 @@ public class RouterManager {
         if (routers.containsKey(uri)) {
             throw new IllegalArgumentException("已存在路由uri: " + uri);
         }
-        var descriptor = Util.getDecriptorFromHandler(handler);
+        var descriptor = Util.getDescriptorFromHandler(handler);
         routers.putIfAbsent(uri, descriptor);
         if (routers.get(uri).getHandler() != handler) {
             throw new IllegalArgumentException("重复注册路由uri: " + uri);

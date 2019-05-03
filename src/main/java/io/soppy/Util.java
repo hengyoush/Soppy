@@ -15,7 +15,7 @@ import static io.soppy.handler.Method.Type.POST;
 
 public class Util {
 
-    public static RequestHandlerDescriptor getDecriptorFromHandler(RequestHandler handler) {
+    public static RequestHandlerDescriptor getDescriptorFromHandler(RequestHandler handler) {
         Class<?> clazz = handler.getClass();
         Set<Method.Type> methods = Optional.ofNullable(clazz.getAnnotation(Method.class))
                 .map(Method::value)
@@ -29,7 +29,7 @@ public class Util {
                             && type.getTypeName().contains("JsonRequestHandler"))
                     .map(ParameterizedType.class::cast)
                     .map(ParameterizedType::getActualTypeArguments)
-                    .map(arr -> (Class<?>)arr[0]).findFirst().get();
+                    .map(arr -> (Class<?>)arr[0]).findFirst().orElseThrow();
         } else
             paramType = null;
 
