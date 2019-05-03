@@ -24,7 +24,6 @@ public class HttpServerHandler extends SimpleChannelInboundHandler<FullHttpReque
     private static final AsciiString KEEP_ALIVE = AsciiString.cached("keep-alive");
 
     private RouterManager routerManager;
-    private Serializer serializer = new JSONSerializer();
     public HttpServerHandler(RouterManager routerManager) {
         this.routerManager = routerManager;
     }
@@ -33,10 +32,6 @@ public class HttpServerHandler extends SimpleChannelInboundHandler<FullHttpReque
     protected void channelRead0(ChannelHandlerContext ctx, FullHttpRequest msg) throws Exception {
         var handlerDesp = routerManager.getHandler(msg.uri(), msg.method());
         var handler = handlerDesp.getHandler();
-        if (handlerDesp == null) {
-            sendError(ctx, HttpResponseStatus.NOT_FOUND);
-            return;
-        }
 
         var result = handler.handle(msg);
         sendMessage(ctx, JSONObject.toJSONString(result));
